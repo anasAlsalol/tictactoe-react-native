@@ -23,9 +23,11 @@ class TicTacToeApp extends Component {
   constructor(props){
     super(props);
     this.state ={
-      roomKey : ''
+      createCode : '',
+      joinCode: ''
     }
     this._createRoom = this._createRoom.bind(this)
+    this._joinRoom = this._joinRoom.bind(this)
   }
 
   componentWillMount(){
@@ -35,6 +37,10 @@ class TicTacToeApp extends Component {
     // socket.on('send', (msg) =>{
     //   this.setState({text: msg})
     // });
+
+    socket.on("game start", function(data){
+      console.log(data);
+    })
   }
 
   leftPad(str, length) {
@@ -56,22 +62,22 @@ class TicTacToeApp extends Component {
     let codeThree = parseInt(Math.random() * (9 - 1) + 1);
     let codeFour = parseInt(Math.random() * (9 - 1) + 1);
     let roomCode = "" + codeOne + codeTwo + codeThree + codeFour;
-    this.setState({ roomKey: roomCode });
+    this.setState({ createCode: roomCode });
     console.log("creating room...");
     //emit socket connection if creating room
     socket.emit("create room", roomCode);
   }
 
   _joinRoom(){
-     socket.emit("join room", roomCode);
+     socket.emit("join room", this.state.joinCode);
   }
 
   render() {
     let showRoom;
 
-    if(this.state.roomKey !== ''){
+    if(this.state.createCode !== ''){
       showRoom = <View>
-      <Text style={{fontSize:30,textAlign:'center'}}>{this.state.roomKey}</Text>
+      <Text style={{fontSize:30,textAlign:'center'}}>{this.state.createCode}</Text>
       <Text style={{textAlign:'center'}}>Waiting for challenger...</Text>
       </View>
     }
@@ -87,11 +93,11 @@ class TicTacToeApp extends Component {
       <Text>Join Game</Text>
       <TextInput
       style={styles.input}
-      onChangeText={(roomCode) => this.setState({roomCode})}
+      onChangeText={(joinCode) => this.setState({joinCode})}
       keyboardType="numeric"
       />
       </View>
-      <TouchableHighlight style={styles.joinGameContainer}>
+      <TouchableHighlight style={styles.joinGameContainer} onPress={this._joinRoom}>
         <View >
           <Text>Join Game</Text>
         </View>
