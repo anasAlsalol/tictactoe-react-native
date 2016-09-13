@@ -1,8 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
 import Board from './board'
 import React, { Component } from 'react';
 window.navigator.userAgent = "react-native";
@@ -15,8 +10,33 @@ import {
   View,
   TextInput,
   TouchableHighlight,
-  State
+  Navigator
 } from 'react-native';
+
+
+class SimpleNavigationApp extends Component {
+  render() {
+    return (
+    <Navigator style={styles.navigator}
+      initialRoute={{id:1}}
+      renderScene={(route, nav) =>
+        {return this.renderScene(route, nav)}}
+/>
+    )
+  }
+
+    renderScene(route,nav) {
+   switch (route.id) {
+      case 1:
+        return <TicTacToeApp navigator={nav} />
+      case 2:
+        return <Board navigator={nav} />
+   }
+}
+
+
+  
+}
 
 class TicTacToeApp extends Component {
 
@@ -28,19 +48,17 @@ class TicTacToeApp extends Component {
     }
     this._createRoom = this._createRoom.bind(this)
     this._joinRoom = this._joinRoom.bind(this)
+    this._changeScene = this._changeScene.bind(this)
   }
 
   componentWillMount(){
     //Must specifiy 'jsonp: false' since react native doesn't provide the dom
     //and thus wouldn't support creating an iframe/script tag
     socket = io('http://localhost:3000',{jsonp: false});
-    // socket.on('send', (msg) =>{
-    //   this.setState({text: msg})
-    // });
 
     socket.on("game start", function(data){
       console.log(data);
-    })
+    });
   }
 
   leftPad(str, length) {
@@ -56,6 +74,12 @@ class TicTacToeApp extends Component {
       return pad + str;
   }
 
+  _changeScene(){
+     this.props.navigator.push({
+      id: 2
+    })
+  }
+
   _createRoom(){
     let codeOne = parseInt(Math.random() * (9 - 1) + 1);
     let codeTwo = parseInt(Math.random() * (9 - 1) + 1);
@@ -64,7 +88,6 @@ class TicTacToeApp extends Component {
     let roomCode = "" + codeOne + codeTwo + codeThree + codeFour;
     this.setState({ createCode: roomCode });
     console.log("creating room...");
-    //emit socket connection if creating room
     socket.emit("create room", roomCode);
   }
 
@@ -83,6 +106,11 @@ class TicTacToeApp extends Component {
     }
     return (
       <View style={styles.container}>
+       <TouchableHighlight onPress={this._changeScene} style={styles.innerContainer}>
+        <View>
+          <Text>Change Scene</Text>
+        </View>
+      </TouchableHighlight>
       <TouchableHighlight onPress={this._createRoom} style={styles.innerContainer}>
         <View>
           <Text>Create Game Room</Text>
@@ -149,4 +177,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('tictactoe', () => TicTacToeApp);
+AppRegistry.registerComponent('tictactoe', () => SimpleNavigationApp);
