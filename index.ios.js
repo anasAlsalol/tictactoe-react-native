@@ -5,6 +5,9 @@
  */
 import Board from './board'
 import React, { Component } from 'react';
+window.navigator.userAgent = "react-native";
+let io = require('socket.io-client/socket.io');
+let socket;
 import {
   AppRegistry,
   StyleSheet,
@@ -25,16 +28,52 @@ class TicTacToeApp extends Component {
     this._createRoom = this._createRoom.bind(this)
   }
 
+  componentWillMount(){
+    //Must specifiy 'jsonp: false' since react native doesn't provide the dom
+    //and thus wouldn't support creating an iframe/script tag
+    socket = io('http://localhost:3000',{jsonp: false});
+    // socket.on('send', (msg) =>{
+    //   this.setState({text: msg})
+    // });
+  }
+
+  leftPad(str, length) {
+      str = str == null ? '' : String(str);
+      length = ~~length;
+      pad = '';
+      padLength = length - str.length;
+
+      while(padLength--) {
+          pad += '0';
+      }
+
+      return pad + str;
+  }
+
   _createRoom(){
-    this.setState({ roomKey: "0423" });
+    let codeOne = parseInt(Math.random() * (9 - 1) + 1);
+    let codeTwo = parseInt(Math.random() * (9 - 1) + 1);
+    let codeThree = parseInt(Math.random() * (9 - 1) + 1);
+    let codeFour = parseInt(Math.random() * (9 - 1) + 1);
+    let roomCode = "" + codeOne + codeTwo + codeThree + codeFour;
+    this.setState({ roomKey: roomCode });
     console.log("creating room...");
+    //emit socket connection if creating room
+    socket.emit("create room", roomCode);
+  }
+
+  _joinRoom(){
+     socket.emit("join room", roomCode);
   }
 
   render() {
     let showRoom;
 
     if(this.state.roomKey !== ''){
-      showRoom = <Text style={{fontSize:30}}>{this.state.roomKey}</Text>
+      showRoom = <View>
+      <Text style={{fontSize:30,textAlign:'center'}}>{this.state.roomKey}</Text>
+      <Text style={{textAlign:'center'}}>Waiting for challenger...</Text>
+      </View>
     }
     return (
       <View style={styles.container}>
@@ -48,6 +87,8 @@ class TicTacToeApp extends Component {
       <Text>Join Game</Text>
       <TextInput
       style={styles.input}
+      onChangeText={(roomCode) => this.setState({roomCode})}
+      keyboardType="numeric"
       />
       </View>
       <TouchableHighlight style={styles.joinGameContainer}>
@@ -64,7 +105,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#00FFFF',
+    backgroundColor: '#FFFFFF',
     padding:10,
     paddingTop: 150
   },
