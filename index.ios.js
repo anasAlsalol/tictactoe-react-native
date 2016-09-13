@@ -11,41 +11,50 @@ import {
   Text,
   View,
   TextInput,
-  TouchableHighlight
+  TouchableHighlight,
+  State
 } from 'react-native';
 
 class TicTacToeApp extends Component {
 
-  constructor(){
-    super();
+  constructor(props){
+    super(props);
+    this.state ={
+      roomKey : ''
+    }
+    this._createRoom = this._createRoom.bind(this)
   }
 
   _createRoom(){
+    this.setState({ roomKey: "0423" });
     console.log("creating room...");
   }
 
   render() {
     let showRoom;
 
-    if(this.state.roomKey){
-      showRoom = <Text>this.state.roomKey</Text>
-    }else{
-
+    if(this.state.roomKey !== ''){
+      showRoom = <Text style={{fontSize:30}}>{this.state.roomKey}</Text>
     }
     return (
       <View style={styles.container}>
-      <TouchableHighlight onPress={this._createRoom}>
-        <View style={styles.innerContainer}>
+      <TouchableHighlight onPress={this._createRoom} style={styles.innerContainer}>
+        <View>
           <Text>Create Game Room</Text>
         </View>
       </TouchableHighlight>
       {showRoom}
+      <View style={styles.bottomInnerContainer}>
       <Text>Join Game</Text>
       <TextInput
       style={styles.input}
-      placeholder="Type here to translate!"
-      onChangeText={(text) => this.setState({text})}
       />
+      </View>
+      <TouchableHighlight style={styles.joinGameContainer}>
+        <View >
+          <Text>Join Game</Text>
+        </View>
+      </TouchableHighlight>
       </View>
     );
   }
@@ -54,34 +63,43 @@ class TicTacToeApp extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#00FFFF',
-    padding:10
+    padding:10,
+    paddingTop: 150
   },
   innerContainer: {
-    flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
     paddingLeft:10,
     paddingRight:10,
     borderWidth:1,
     height:70
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  bottomInnerContainer: {
+    alignItems:'center',
+    paddingLeft:10,
+    paddingRight:10,
+    marginTop: 70
   },
   input: {
     height:40,
-    borderWidth: 1
-  }
+    borderWidth: 1,
+    width: 150,
+    padding:10,
+    marginBottom:20
+  },
+  joinGame: {
+    paddingLeft:10,
+    paddingRight:10,
+    borderWidth:1
+  },
+  joinGameContainer: {
+    justifyContent: 'center',
+    paddingLeft:10,
+    paddingRight:10,
+    borderWidth:1,
+    height:50
+  },
 });
 
 AppRegistry.registerComponent('tictactoe', () => TicTacToeApp);
