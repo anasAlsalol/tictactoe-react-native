@@ -37,7 +37,7 @@ export default class Board extends Component {
 			);
 		});
 
-		return <View style={styles.rowContainer}>{row}</View>
+		return <View key={rowIndex} style={styles.rowContainer}>{row}</View>
 	});
   }
 

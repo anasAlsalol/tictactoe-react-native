@@ -10,7 +10,8 @@ export default class Tile extends Component {
     super(props);
     this.state = {
       value: props.value,
-      socket : props.socket
+      socket : props.socket,
+      value: ''
     }
     this._clickTile = this._clickTile.bind(this);
   }
@@ -20,13 +21,16 @@ export default class Tile extends Component {
     console.log(this.state.value)
     // console.log(this.state.socket)
     this.state.socket.emit("click", this.state.value);
+    this.setState({
+      value: 'X'
+    })
   }
 
   render() {
     return (
       <TouchableHighlight style={styles.tile} onPress={this._clickTile}>
       <View >
-      <Text style={{color: '#FFFFFF'}}>here</Text>
+      <Text style={{color: '#FFFFFF', fontSize:40}}>{this.state.value}</Text>
       </View>
       </TouchableHighlight>
     )
@@ -37,9 +41,15 @@ const styles = StyleSheet.create({
   tile: {
     backgroundColor: '#000000',
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    height:100,
+     justifyContent: 'center',
+    height:120,
     borderWidth: 1,
     borderColor: '#FFFFFF'
+  },
+  tileText: {
+    color: '#FFFFFF',
+    fontSize : 40,
   }
 });
