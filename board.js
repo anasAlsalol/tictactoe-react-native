@@ -29,7 +29,7 @@ export default class Board extends Component {
   	})
 
   	this.state.socket.on("game end", (data) =>{
-  		//change the playerturn to 0
+  		//change the playerturn to 0 when game ended
   		this.setState({
   			playerTurn: 0,
   			message: data

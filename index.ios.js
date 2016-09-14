@@ -14,7 +14,8 @@ import {
   View,
   TextInput,
   TouchableHighlight,
-  Navigator
+  Navigator,
+  TouchableWithoutFeedback
 } from 'react-native';
 
 
@@ -51,13 +52,13 @@ class TicTacToeApp extends Component {
     }
     this._createRoom = this._createRoom.bind(this);
     this._joinRoom = this._joinRoom.bind(this);
-    this.changeScene = this.changeScene.bind(this);
+    this._dismissKeyboard = this._dismissKeyboard.bind(this);
   }
 
   componentWillMount(){
     //Must specifiy 'jsonp: false' since react native doesn't provide the dom
     //and thus wouldn't support creating an iframe/script tag
-    socket = io('http://localhost:3000',{jsonp: false});
+    socket = io('http://fbfa32de.ngrok.io',{jsonp: false});
   }
 
   componentDidMount(){
@@ -80,13 +81,6 @@ class TicTacToeApp extends Component {
       }
 
       return pad + str;
-  }
-
-  changeScene(){
-    gameCode = this.state.createCode
-    this.state.navigator.push({
-      id: 2
-    })
   }
 
   _createRoom(){
@@ -114,6 +108,10 @@ class TicTacToeApp extends Component {
     });
   }
 
+  _dismissKeyboard(){
+    this._input.blur();
+  }
+
   render() {
     let showRoom;
     if(this.state.createCode !== ''){
@@ -124,12 +122,8 @@ class TicTacToeApp extends Component {
       </View>
     }
     return (
+    <TouchableWithoutFeedback onPress={this._dismissKeyboard}>
       <View style={styles.container}>
-       <TouchableHighlight onPress={this.changeScene} style={styles.innerContainer}>
-        <View>
-          <Text>Change Scene</Text>
-        </View>
-      </TouchableHighlight>
       <TouchableHighlight onPress={this._createRoom} style={styles.innerContainer}>
         <View>
           <Text>Create Game Room</Text>
@@ -142,6 +136,7 @@ class TicTacToeApp extends Component {
       style={styles.input}
       onChangeText={(joinCode) => this.setState({joinCode})}
       keyboardType="numeric"
+      ref={(input) => this._input = input}
       />
       </View>
       <TouchableHighlight style={styles.joinGameContainer} onPress={this._joinRoom}>
@@ -149,7 +144,9 @@ class TicTacToeApp extends Component {
           <Text>Join Game</Text>
         </View>
       </TouchableHighlight>
+     
       </View>
+       </TouchableWithoutFeedback>
     );
   }
 }
