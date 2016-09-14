@@ -58,7 +58,7 @@ class TicTacToeApp extends Component {
   componentWillMount(){
     //Must specifiy 'jsonp: false' since react native doesn't provide the dom
     //and thus wouldn't support creating an iframe/script tag
-    socket = io('http://fbfa32de.ngrok.io',{jsonp: false});
+    socket = io('http://tictactoe2.zhenjie.xyz',{jsonp: false});
   }
 
   componentDidMount(){
