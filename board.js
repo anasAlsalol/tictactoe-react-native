@@ -1,36 +1,50 @@
 import Tile from './tile';
 import React, { Component, PropTypes } from 'react';
 import { Navigator, Text, TouchableHighlight, View } from 'react-native';
-
+window.navigator.userAgent = "react-native";
+let io = require('socket.io-client/socket.io');
+let socket;
 export default class Board extends Component {
 
   constructor(props){
     super(props);
+    this.state = {
+		gameboard: [
+	        [0,0,0],
+	        [0,0,0],
+	        [0,0,0]
+      ],
+    }
     this._clickTile = this._clickTile.bind(this);
+    this._renderBoard = this._renderBoard.bind(this);
+  }
+
+  componentWillMount(){
+    socket = io('http://localhost:3000',{jsonp: false});
   }
 
   _clickTile(){
     console.log("tile clicked");
   }
 
+  _renderBoard(){
+	return this.state.gameboard.map((rows, rowIndex) => {
+		
+		let row = rows.map((value, colIndex) => {
+			let coord = colIndex.toString() + rowIndex.toString();
+			return (
+			<Tile key={coord} socket={socket} row={rowIndex} col={colIndex} />
+			);
+		});
+
+		return <View style={styles.rowContainer}>{row}</View>
+	});
+  }
+
   render() {
     return (
 		<View style={styles.container}>
-			<View style={styles.rowContainer}>
-				<Tile onPress={this._clickTile}/>
-				<Tile />
-				<Tile />
-			</View>
-			<View style={styles.rowContainer}>
-				<Tile/>
-				<Tile />
-				<Tile />
-			</View>
-			<View style={styles.rowContainer}>
-				<Tile />
-				<Tile />
-				<Tile />
-			</View>
+			{this._renderBoard()}
 		</View>
     )
   }
@@ -40,7 +54,7 @@ const styles= {
 	container: {
 		flex: 1, 
 		alignItems: 'center',
-		marginTop: 200
+		marginTop: 150
 	},
 	rowContainer:{
 		flexDirection: 'row',
