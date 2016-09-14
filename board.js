@@ -2,52 +2,74 @@ import Tile from './tile';
 import React, { Component, PropTypes } from 'react';
 import { Navigator, Text, TouchableHighlight, View } from 'react-native';
 window.navigator.userAgent = "react-native";
-let io = require('socket.io-client/socket.io');
-let socket;
 export default class Board extends Component {
 
   constructor(props){
     super(props);
     this.state = {
-		gameboard: [
-	        [0,0,0],
-	        [0,0,0],
-	        [0,0,0]
+		gameBoard: [
+	        ['','',''],
+	        ['','',''],
+	        ['','','']
       ],
-      gameCode: props.gameCode
+      gameCode: props.gameCode,
+      socket: props.socket,
+      playerTurn : '1'
     }
     this._renderBoard = this._renderBoard.bind(this);
   }
 
-  componentWillMount(){
-    socket = io('http://localhost:3000',{jsonp: false});
+  componentDidMount(){
+  	this.state.socket.on("board update", (data) => {
+  		console.log(data);
+		this.setState({
+  			gameBoard: data.gameBoard,
+  			playerTurn: data.playerTurn
+  		})
+  	})
+
+  	this.state.socket.on("game end", (data) =>{
+  		//change the playerturn to 0
+  		this.setState({
+  			playerTurn: 0,
+  			message: data
+  		})
+  	})
   }
 
   _renderBoard(){
-	return this.state.gameboard.map((rows, rowIndex) => {
+	return this.state.gameBoard.map((rows, rowIndex) => {
 		
 		let row = rows.map((value, colIndex) => {
 			let coord = colIndex.toString() + rowIndex.toString();
 			return (
 			<Tile 
 				key={coord} 
-				socket={socket} 
+				socket={this.state.socket} 
 				row={rowIndex} 
 				col={colIndex} 
+				gameCode={this.state.gameCode}
 				playerValue={this.props.playerValue} 
+				value={value}
+				playerNum = {this.props.playerNum}
+				playerTurn={this.state.playerTurn}
 			/>
 			);
 		});
 
 		return <View key={rowIndex} style={styles.rowContainer}>{row}</View>
 	});
-  }
+}
+
 
   render() {
     return (
 		<View style={styles.container}>
 		<Text>
 			Room Code: {this.state.gameCode}
+		</Text>
+		<Text>
+			{this.state.message}
 		</Text>
 			{this._renderBoard()}
 		</View>

@@ -4,6 +4,7 @@ window.navigator.userAgent = "react-native";
 let io = require('socket.io-client/socket.io');
 let socket;
 let playerValue;
+let playerNum;
 let gameCode;
 
 import {
@@ -33,7 +34,7 @@ class SimpleNavigationApp extends Component {
       case 1:
         return <TicTacToeApp navigator={nav} />
       case 2:
-        return <Board navigator={nav} playerValue={playerValue} gameCode={gameCode} />
+        return <Board socket={socket} navigator={nav} playerValue={playerValue} playerNum={playerNum} gameCode={gameCode} />
     }
   }
 }
@@ -60,7 +61,7 @@ class TicTacToeApp extends Component {
   }
 
   componentDidMount(){
-      socket.on("game start", (data) => {
+    socket.on("game start", (data) => {
       gameCode = this.state.createCode
       this.props.navigator.push({
         id: 2
@@ -94,27 +95,27 @@ class TicTacToeApp extends Component {
     let codeThree = parseInt(Math.random() * (9 - 1) + 1);
     let codeFour = parseInt(Math.random() * (9 - 1) + 1);
     let roomCode = "" + codeOne + codeTwo + codeThree + codeFour;
+    playerValue = 'X';
+    playerNum = 1;
     this.setState({ 
       createCode: roomCode,
       player: 1,
     });
-    playerValue = 'X'
     socket.emit("create room", roomCode);
   }
 
   _joinRoom(){
     socket.emit("join room", this.state.joinCode);
+    playerValue = 'O';
+    playerNum = 2;
     this.setState({ 
       player: 2,
       createCode: this.state.joinCode,
     });
-    playerValue = 'O';
   }
 
   render() {
     let showRoom;
-
-
     if(this.state.createCode !== ''){
      
       showRoom = <View>
