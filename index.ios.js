@@ -21,21 +21,18 @@ class SimpleNavigationApp extends Component {
       initialRoute={{id:1}}
       renderScene={(route, nav) =>
         {return this.renderScene(route, nav)}}
-/>
+      />
     )
   }
 
-    renderScene(route,nav) {
+  renderScene(route,nav) {
    switch (route.id) {
       case 1:
         return <TicTacToeApp navigator={nav} />
       case 2:
         return <Board navigator={nav} />
-   }
-}
-
-
-  
+    }
+  }
 }
 
 class TicTacToeApp extends Component {
@@ -57,6 +54,7 @@ class TicTacToeApp extends Component {
     socket = io('http://localhost:3000',{jsonp: false});
 
     socket.on("game start", function(data){
+      //player 2 has join!
       console.log(data);
     });
   }
@@ -177,4 +175,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('tictactoe', () => SimpleNavigationApp);
+AppRegistry.registerComponent('tictactoe', () => Board);

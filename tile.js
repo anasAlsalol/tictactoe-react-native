@@ -6,7 +6,7 @@ export default class Tile extends Component {
   render() {
     return (
       <View style={styles.tile}>
-      <Text>here</Text>
+      <Text style={{color: '#FFFFFF'}}>here</Text>
       </View>
     )
   }
