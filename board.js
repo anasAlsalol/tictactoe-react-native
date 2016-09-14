@@ -14,6 +14,7 @@ export default class Board extends Component {
 	        [0,0,0],
 	        [0,0,0]
       ],
+      gameCode: props.gameCode
     }
     this._renderBoard = this._renderBoard.bind(this);
   }
@@ -45,6 +46,9 @@ export default class Board extends Component {
   render() {
     return (
 		<View style={styles.container}>
+		<Text>
+			Room Code: {this.state.gameCode}
+		</Text>
 			{this._renderBoard()}
 		</View>
     )

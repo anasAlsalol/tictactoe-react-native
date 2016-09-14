@@ -33,7 +33,7 @@ class SimpleNavigationApp extends Component {
       case 1:
         return <TicTacToeApp navigator={nav} />
       case 2:
-        return <Board navigator={nav} playerValue={playerValue} gameCode={gameCode}/>
+        return <Board navigator={nav} playerValue={playerValue} gameCode={gameCode} />
     }
   }
 }
@@ -61,6 +61,7 @@ class TicTacToeApp extends Component {
 
   componentDidMount(){
       socket.on("game start", (data) => {
+      gameCode = this.state.createCode
       this.props.navigator.push({
         id: 2
       })
