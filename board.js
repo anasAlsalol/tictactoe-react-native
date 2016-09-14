@@ -15,16 +15,11 @@ export default class Board extends Component {
 	        [0,0,0]
       ],
     }
-    this._clickTile = this._clickTile.bind(this);
     this._renderBoard = this._renderBoard.bind(this);
   }
 
   componentWillMount(){
     socket = io('http://localhost:3000',{jsonp: false});
-  }
-
-  _clickTile(){
-    console.log("tile clicked");
   }
 
   _renderBoard(){
@@ -33,7 +28,13 @@ export default class Board extends Component {
 		let row = rows.map((value, colIndex) => {
 			let coord = colIndex.toString() + rowIndex.toString();
 			return (
-			<Tile key={coord} socket={socket} row={rowIndex} col={colIndex} />
+			<Tile 
+				key={coord} 
+				socket={socket} 
+				row={rowIndex} 
+				col={colIndex} 
+				playerValue={this.props.playerValue} 
+			/>
 			);
 		});
 

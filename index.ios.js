@@ -3,6 +3,9 @@ import React, { Component } from 'react';
 window.navigator.userAgent = "react-native";
 let io = require('socket.io-client/socket.io');
 let socket;
+let playerValue;
+let gameCode;
+
 import {
   AppRegistry,
   StyleSheet,
@@ -30,7 +33,7 @@ class SimpleNavigationApp extends Component {
       case 1:
         return <TicTacToeApp navigator={nav} />
       case 2:
-        return <Board navigator={nav} />
+        return <Board navigator={nav} playerValue={playerValue} gameCode={gameCode}/>
     }
   }
 }
@@ -41,21 +44,26 @@ class TicTacToeApp extends Component {
     super(props);
     this.state ={
       createCode : '',
-      joinCode: ''
+      joinCode: '',
+      player: 0,
+      navigator : props.navigator
     }
-    this._createRoom = this._createRoom.bind(this)
-    this._joinRoom = this._joinRoom.bind(this)
-    this._changeScene = this._changeScene.bind(this)
+    this._createRoom = this._createRoom.bind(this);
+    this._joinRoom = this._joinRoom.bind(this);
+    this.changeScene = this.changeScene.bind(this);
   }
 
   componentWillMount(){
     //Must specifiy 'jsonp: false' since react native doesn't provide the dom
     //and thus wouldn't support creating an iframe/script tag
     socket = io('http://localhost:3000',{jsonp: false});
+  }
 
-    socket.on("game start", function(data){
-      //player 2 has join!
-      console.log(data);
+  componentDidMount(){
+      socket.on("game start", (data) => {
+      this.props.navigator.push({
+        id: 2
+      })
     });
   }
 
@@ -72,8 +80,9 @@ class TicTacToeApp extends Component {
       return pad + str;
   }
 
-  _changeScene(){
-     this.props.navigator.push({
+  changeScene(){
+    gameCode = this.state.createCode
+    this.state.navigator.push({
       id: 2
     })
   }
@@ -84,19 +93,29 @@ class TicTacToeApp extends Component {
     let codeThree = parseInt(Math.random() * (9 - 1) + 1);
     let codeFour = parseInt(Math.random() * (9 - 1) + 1);
     let roomCode = "" + codeOne + codeTwo + codeThree + codeFour;
-    this.setState({ createCode: roomCode });
-    console.log("creating room...");
+    this.setState({ 
+      createCode: roomCode,
+      player: 1,
+    });
+    playerValue = 'X'
     socket.emit("create room", roomCode);
   }
 
   _joinRoom(){
-     socket.emit("join room", this.state.joinCode);
+    socket.emit("join room", this.state.joinCode);
+    this.setState({ 
+      player: 2,
+      createCode: this.state.joinCode,
+    });
+    playerValue = 'O';
   }
 
   render() {
     let showRoom;
 
+
     if(this.state.createCode !== ''){
+     
       showRoom = <View>
       <Text style={{fontSize:30,textAlign:'center'}}>{this.state.createCode}</Text>
       <Text style={{textAlign:'center'}}>Waiting for challenger...</Text>
@@ -104,7 +123,7 @@ class TicTacToeApp extends Component {
     }
     return (
       <View style={styles.container}>
-       <TouchableHighlight onPress={this._changeScene} style={styles.innerContainer}>
+       <TouchableHighlight onPress={this.changeScene} style={styles.innerContainer}>
         <View>
           <Text>Change Scene</Text>
         </View>
@@ -175,4 +194,4 @@ const styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('tictactoe', () => Board);
+AppRegistry.registerComponent('tictactoe', () => SimpleNavigationApp);
