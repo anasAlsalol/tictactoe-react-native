@@ -3,11 +3,31 @@ import React, { Component, PropTypes } from 'react';
 import { Navigator, Text, TouchableHighlight, View } from 'react-native';
 
 export default class Board extends Component {
+
+  constructor(props){
+    super(props);
+    this._clickTile = this._clickTile.bind(this);
+  }
+
+  _clickTile(){
+    console.log("tile clicked");
+  }
+
   render() {
     return (
 		<View style={styles.container}>
 			<View style={styles.rowContainer}>
-				<Tile style={{height:70}}/>
+				<Tile onPress={this._clickTile}/>
+				<Tile />
+				<Tile />
+			</View>
+			<View style={styles.rowContainer}>
+				<Tile/>
+				<Tile />
+				<Tile />
+			</View>
+			<View style={styles.rowContainer}>
+				<Tile />
 				<Tile />
 				<Tile />
 			</View>
@@ -20,10 +40,9 @@ const styles= {
 	container: {
 		flex: 1, 
 		alignItems: 'center',
-		height: 500,
+		marginTop: 200
 	},
 	rowContainer:{
-		flex: 1, 
 		flexDirection: 'row',
 		alignItems: 'center',
 	}
